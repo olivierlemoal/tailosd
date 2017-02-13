@@ -17,19 +17,27 @@ _w = None
 USER = getpass.getuser()
 PIDFILE = "/var/tmp/tailosd_%s.pid" % USER
 
+
 def _sigint(signal, frame):
     print('ctrl-c, exiting')
     os.remove(PIDFILE)
     sys.exit(0)
+
+
 def _sighup(signal, frame):
     print('sighup, reloading filters')
     _w.reload_conf()
+
+
 def _sigusr1(signal, frame):
     print('sigusr1, pausing')
     _w.pause()
+
+
 def _sigusr2(signal, frame):
     print('sigusr2, resuming')
     _w.resume()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Tail files with On Screen Display output')
@@ -54,9 +62,12 @@ if __name__ == "__main__":
             parser.error("PID file does not exist, is tailosd running under same user \"%s\" ? (%s)" % (USER, PIDFILE))
         with open(PIDFILE) as f:
             pid = int(f.read())
-            if args.reload: os.kill(pid, signal.SIGHUP)
-            if args.pause: os.kill(pid, signal.SIGUSR1)
-            if args.resume: os.kill(pid, signal.SIGUSR2)
+            if args.reload:
+                os.kill(pid, signal.SIGHUP)
+            if args.pause:
+                os.kill(pid, signal.SIGUSR1)
+            if args.resume:
+                os.kill(pid, signal.SIGUSR2)
         print("signal sent to running tailosd")
         sys.exit(0)
 
